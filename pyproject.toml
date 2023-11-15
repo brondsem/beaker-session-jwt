@@ -1,0 +1,30 @@
+[project]
+name = "beaker-session-jwt"
+version = "0.0.1"
+urls = {homepage = "https://github.com/brondsem/beaker-session-jwt"}
+readme = "README.md"
+license = {text = "Apache Software License"}
+classifiers = [
+  "License :: OSI Approved :: Apache Software License",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+]
+requires-python = ">=3.8"
+
+dependencies = [
+    "beaker<2",
+    "joserfc",
+    # the "bson" package on pypi is old and not what we want!  use pymongo to get it
+    "pymongo",
+]
+
+[project.optional-dependencies]
+test = ["webtest", "pytest"]
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
