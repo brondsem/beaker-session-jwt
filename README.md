@@ -33,12 +33,13 @@ See Beaker docs for main config options, many of which apply to this class too.
   - multiple signing keys are supported, so you can rotate them.  The first one in the list will be used for writing, the rest will be permitted for verifying.
 - `bson_compress_jwt_payload` default True
   - serializing with BSON and compressing with zlib, to allow for types like datetime, bytes, etc to be stored which JSON cannot store.  This is stored all in a single JWT field, so JWT is hardly being used, just for signatures really
-  - requires `pymongo` library
 - `read_original_format` default False
   - set to true to read original beaker signed cookies.  Allows for backward compatibility and transition periods
   - after a transition period, make sure to set this back to False
 - `original_format_validate_key` required if `read_original_format`
 - `original_format_data_serializer`
+- `original_format_remove_keys` optional comma-separated list
+  - if your old sessions have values that pickle supported, but don't work any more, list the session keys here.  They will be removed but the rest of the session will be preserved.
 - `write_original_format` default False
   - set to true if you have many servers/processes and need to roll this out gradually.  Then later set to False when all processes are ready.
 

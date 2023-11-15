@@ -1,7 +1,6 @@
 [project]
 name = "beaker-session-jwt"
-version = "0.0.1"
-urls = {homepage = "https://github.com/brondsem/beaker-session-jwt"}
+version = "1.0.0"
 readme = "README.md"
 license = {text = "Apache Software License"}
 classifiers = [
@@ -24,6 +23,10 @@ dependencies = [
 
 [project.optional-dependencies]
 test = ["webtest", "pytest"]
+
+[project.urls]
+Homepage = "https://github.com/brondsem/beaker-session-jwt"
+Changes = "https://github.com/brondsem/beaker-session-jwt/blob/main/CHANGES.md"
 
 [build-system]
 requires = ["setuptools"]
