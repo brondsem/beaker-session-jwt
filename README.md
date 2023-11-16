@@ -2,8 +2,9 @@ A new signed-cookie implementation for [Beaker Sessions](https://github.com/bban
 
 # Features
 
-- multiple keys, so you can rotate them
+- so much safer than default Pickle serialization
 - serialize with BSON and compress, so more datatypes supported than JSON (optional)
+- multiple keys, so you can rotate them
 - stronger hash algorithm (SHA256)
 - backwards compatible reads/writes with original pickle-based beaker session cookies
 - JWT for signing (although not much else of JWT is implemented)
