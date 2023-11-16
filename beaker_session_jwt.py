@@ -83,10 +83,15 @@ class JWTCookieSession(CookieSession):
             cookieheader = request['cookie']
         except KeyError:
             cookieheader = ''
-        # BaseCookie instead of SimpleCookie to avoid extra " when using write_original_format option
-        self.cookie = BaseCookie(
-            input=cookieheader,
-        )
+        try:
+            # BaseCookie instead of SimpleCookie to avoid extra " when using write_original_format option
+            self.cookie = BaseCookie(
+                input=cookieheader,
+            )
+        except CookieError:
+            self.cookie = BaseCookie(
+                input=None,
+            )
 
         self['_id'] = _session_id()
         self.is_new = True

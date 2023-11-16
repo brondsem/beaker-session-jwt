@@ -121,7 +121,7 @@ def test_missing_configs():
 
 def test_bad_existing_cookie():
     req = FakeReq()
-    req['cookie'] = '/@?'
+    req['cookie'] = '/bad/key=foo'
     jcs = JWTCookieSession(req, jwt_secret_keys='x')
     jcs._encrypt_data({'hi': 'you'})
 
