@@ -1,6 +1,6 @@
 [project]
 name = "beaker-session-jwt"
-version = "1.0.0"
+version = "1.0.1"
 readme = "README.md"
 license = {text = "Apache Software License"}
 classifiers = [
