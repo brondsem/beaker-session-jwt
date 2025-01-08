@@ -79,14 +79,23 @@ class JWTCookieSession(CookieSession):
         if timeout and not save_accessed_time:
             raise BeakerException("timeout requires save_accessed_time")
 
-        try:
-            cookieheader = request['cookie']
-        except KeyError:
-            cookieheader = ''
+        cookieheader = request.get('cookie') or ''
+
+        # workaround https://github.com/python/cpython/issues/92936 in case of a bad cookie spoiling it for everyone
+        cookiedict = {}
+        for cook in cookieheader.split(';'):
+            if '=' not in cook:
+                continue
+            k, v = cook.strip().split('=', 1)  # only split on first =.  There can be more in the value
+            v = v.strip('"')  # ok if entire value is quoted
+            if '"' in v or ',' in v:
+                log.warning(f'invalid characters in cookie {k}={v}')
+            cookiedict[k] = v
+
         try:
             # BaseCookie instead of SimpleCookie to avoid extra " when using write_original_format option
             self.cookie = BaseCookie(
-                input=cookieheader,
+                input=cookiedict,
             )
         except CookieError:
             self.cookie = BaseCookie(
