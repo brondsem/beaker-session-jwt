@@ -165,11 +165,6 @@ class JWTCookieSession(CookieSession):
             for i, jwt_key in enumerate(self.jwt_secret_keys):
                 try:
                     jwt_tok = jwt.decode(session_data, jwt_key, algorithms=[self.alg])
-                    payload = jwt_tok.claims
-                    compressed = payload.pop(self.compress_claim_fld, None)
-                    if self.bson_compress_jwt_payload and compressed:
-                        payload.update(bson.decode(zlib.decompress(b85decode(compressed))))
-                    return payload
                 except BadSignatureError:
                     if i == len(self.jwt_secret_keys) - 1:
                         # last one
@@ -177,6 +172,13 @@ class JWTCookieSession(CookieSession):
                     else:
                         # try more
                         continue
+                else:
+                    payload = jwt_tok.claims
+                    compressed = payload.pop(self.compress_claim_fld, None)
+                    if self.bson_compress_jwt_payload and compressed:
+                        payload.update(bson.decode(zlib.decompress(b85decode(compressed))))
+                    return payload
+
         except ValueError:
             # wasn't JWT at all
             if not self.read_original_format:
