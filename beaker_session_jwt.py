@@ -79,14 +79,23 @@ class JWTCookieSession(CookieSession):
         if timeout and not save_accessed_time:
             raise BeakerException("timeout requires save_accessed_time")
 
-        try:
-            cookieheader = request['cookie']
-        except KeyError:
-            cookieheader = ''
+        cookieheader = request.get('cookie') or ''
+
+        # workaround https://github.com/python/cpython/issues/92936 in case of a bad cookie spoiling it for everyone
+        cookiedict = {}
+        for cook in cookieheader.split(';'):
+            if '=' not in cook:
+                continue
+            k, v = cook.strip().split('=', 1)  # only split on first =.  There can be more in the value
+            v = v.strip('"')  # ok if entire value is quoted
+            if '"' in v or ',' in v:
+                log.warning(f'invalid characters in cookie {k}={v}')
+            cookiedict[k] = v
+
         try:
             # BaseCookie instead of SimpleCookie to avoid extra " when using write_original_format option
             self.cookie = BaseCookie(
-                input=cookieheader,
+                input=cookiedict,
             )
         except CookieError:
             self.cookie = BaseCookie(
@@ -156,11 +165,6 @@ class JWTCookieSession(CookieSession):
             for i, jwt_key in enumerate(self.jwt_secret_keys):
                 try:
                     jwt_tok = jwt.decode(session_data, jwt_key, algorithms=[self.alg])
-                    payload = jwt_tok.claims
-                    compressed = payload.pop(self.compress_claim_fld, None)
-                    if self.bson_compress_jwt_payload and compressed:
-                        payload.update(bson.decode(zlib.decompress(b85decode(compressed))))
-                    return payload
                 except BadSignatureError:
                     if i == len(self.jwt_secret_keys) - 1:
                         # last one
@@ -168,6 +172,13 @@ class JWTCookieSession(CookieSession):
                     else:
                         # try more
                         continue
+                else:
+                    payload = jwt_tok.claims
+                    compressed = payload.pop(self.compress_claim_fld, None)
+                    if self.bson_compress_jwt_payload and compressed:
+                        payload.update(bson.decode(zlib.decompress(b85decode(compressed))))
+                    return payload
+
         except ValueError:
             # wasn't JWT at all
             if not self.read_original_format:

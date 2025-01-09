@@ -126,6 +126,13 @@ def test_bad_existing_cookie():
     jcs._encrypt_data({'hi': 'you'})
 
 
+def test_bad_cookie_with_session_cookie():
+    req = FakeReq()
+    req['cookie'] = 'foo={"bar":1,"a":"a"}; beaker.session.id=' + jwt_secret1_bson_date
+    jcs = JWTCookieSession(req, jwt_secret_keys='secret1', timeout=10)
+    assert 'last' in jcs
+
+
 def test_invalid_existing_cookie():
     req = FakeReq()
     req['cookie'] = 'beaker.session.id=/@?'
