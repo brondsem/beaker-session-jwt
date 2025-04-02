@@ -1,3 +1,7 @@
+# 1.0.3
+
+- Handle invalid cookie names better
+
 # 1.0.2
 
 - Handle invalid cookies even better (only ignoring the bad ones, not all)
