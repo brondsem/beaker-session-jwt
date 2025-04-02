@@ -93,11 +93,17 @@ class JWTCookieSession(CookieSession):
             cookiedict[k] = v
 
         try:
+            # limit to only the key we care about, to avoid any problematic other cookies
+            if self.key in cookiedict:
+                cookiedict_our_key_only = {self.key: cookiedict[self.key]}
+            else:
+                cookiedict_our_key_only = {}
             # BaseCookie instead of SimpleCookie to avoid extra " when using write_original_format option
             self.cookie = BaseCookie(
-                input=cookiedict,
+                input=cookiedict_our_key_only,
             )
-        except CookieError:
+        except CookieError as e:
+            log.warning(f'Cookie parsing error: {e} in {cookieheader}')
             self.cookie = BaseCookie(
                 input=None,
             )

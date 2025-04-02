@@ -126,9 +126,16 @@ def test_bad_existing_cookie():
     jcs._encrypt_data({'hi': 'you'})
 
 
-def test_bad_cookie_with_session_cookie():
+def test_bad_cookie_value_with_session_cookie():
     req = FakeReq()
     req['cookie'] = 'foo={"bar":1,"a":"a"}; beaker.session.id=' + jwt_secret1_bson_date
+    jcs = JWTCookieSession(req, jwt_secret_keys='secret1', timeout=10)
+    assert 'last' in jcs
+
+
+def test_bad_cookie_key_with_session_cookie():
+    req = FakeReq()
+    req['cookie'] = 'foo[1]=bar; beaker.session.id=' + jwt_secret1_bson_date
     jcs = JWTCookieSession(req, jwt_secret_keys='secret1', timeout=10)
     assert 'last' in jcs
 
@@ -266,7 +273,6 @@ def test_nonreserializable_is_logged(caplog):
 
     resp = old_app.get('/')
     assert 'current value is: 1' in resp.text
-    print(resp.text)
     new_app.set_cookie('beaker.session.id', old_app.cookies['beaker.session.id'])
     resp = new_app.get('/skip-date')  # load a page without re-adding it since that'll cause more problems
     assert 'original format cookie (pickle) loaded with fields that cannot be serialized' in caplog.records[0].message
