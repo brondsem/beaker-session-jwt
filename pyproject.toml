@@ -17,7 +17,7 @@ requires-python = ">=3.8"
 
 dependencies = [
     "beaker<2",
-    "joserfc",
+    "joserfc>=1.1.0",
     # the "bson" package on pypi is old and not what we want!  use pymongo to get it
     "pymongo",
 ]

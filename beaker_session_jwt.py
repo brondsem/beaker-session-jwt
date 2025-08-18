@@ -11,7 +11,7 @@ from beaker import util
 from beaker.converters import aslist, asbool
 from joserfc import jwt
 from joserfc.jwk import OctKey
-from joserfc.errors import BadSignatureError
+from joserfc.errors import BadSignatureError, DecodeError
 from beaker.session import CookieSession, _session_id, SignedCookie, _ConfigurableSession, InvalidSignature
 from beaker.exceptions import BeakerException
 
@@ -185,7 +185,7 @@ class JWTCookieSession(CookieSession):
                         payload.update(bson.decode(zlib.decompress(b85decode(compressed))))
                     return payload
 
-        except ValueError:
+        except (ValueError, DecodeError):
             # wasn't JWT at all
             if not self.read_original_format:
                 raise
