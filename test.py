@@ -1,11 +1,9 @@
-import re
 from datetime import datetime, timedelta
-from unittest.mock import MagicMock
 
 from joserfc import jwt
 from beaker.exceptions import BeakerException
 from beaker.middleware import SessionMiddleware
-from joserfc.errors import BadSignatureError
+from joserfc.errors import BadSignatureError, UnsupportedAlgorithmError, DecodeError
 from webtest import TestApp
 import pytest
 
@@ -87,14 +85,14 @@ def test_verify_no_signature():
     jcs = JWTCookieSession(req,
                            jwt_secret_keys='secret1')
     jwt_no_sig = jwt.encode({'alg': 'none'}, {'user': 'admin'}, 'nosecret', algorithms=['none'])
-    with pytest.raises(ValueError, match=r'^Algorithm of "none" is not allowed$'):
+    with pytest.raises(UnsupportedAlgorithmError, match=r"Algorithm of 'none' is not allowed"):
         jcs._decrypt_data(jwt_no_sig)
 
 def test_verify_invalid():
     req = FakeReq()
     jcs = JWTCookieSession(req,
                            jwt_secret_keys='secret1')
-    with pytest.raises(ValueError):
+    with pytest.raises(DecodeError):
         jcs._decrypt_data('garbage')
 
 def test_verify_original_format_invalid():
@@ -154,7 +152,7 @@ def test_invalid_existing_cookie():
     req = FakeReq()
     req['cookie'] = 'beaker.session.id=/@?'
     JWTCookieSession(req, jwt_secret_keys='x', invalidate_corrupt=True)  # produces warning
-    with pytest.raises(ValueError, match=r'^Invalid JSON Web Signature$'):
+    with pytest.raises(DecodeError, match=r'Invalid JSON Web Signature'):
         JWTCookieSession(req, jwt_secret_keys='x', invalidate_corrupt=False)
 
 

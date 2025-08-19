@@ -2,22 +2,21 @@
 name = "beaker-session-jwt"
 version = "1.0.3"
 readme = "README.md"
-license = {text = "Apache Software License"}
+license = "Apache-2.0"
 classifiers = [
-  "License :: OSI Approved :: Apache Software License",
   "Programming Language :: Python",
-  "Programming Language :: Python :: 3.8",
   "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
 ]
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 
 dependencies = [
     "beaker<2",
-    "joserfc",
+    "joserfc>=1.1.0",
     # the "bson" package on pypi is old and not what we want!  use pymongo to get it
     "pymongo",
 ]
